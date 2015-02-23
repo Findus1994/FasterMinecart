@@ -21,12 +21,19 @@ import org.bukkit.util.Vector;
 
 public class MinecartEntryListener implements Listener {
 
-	private static final double NORMAL_MAX_SPEED = 0.4D;
-	private static final double NEW_MAX_SPEED = 1D;
+	private static final double DEFAULT_MAX_SPEED = 0.4;
+
+	private final Main plugin;
 
 	private final ArrayList<Minecart> minecartsToSpeedUp = new ArrayList<Minecart>();
 	private final HashMap<Minecart, Double> prevSpeed = new HashMap<Minecart, Double>();
 	private final ArrayList<Minecart> hasNotPassed = new ArrayList<Minecart>();
+	private final double pluginMaxSpeed;
+
+	public MinecartEntryListener(Main main) {
+		plugin = main;
+		pluginMaxSpeed = plugin.getConfig().getDouble("maximumSpeed");
+	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onMinecartEnter(VehicleEnterEvent event) {
@@ -41,6 +48,14 @@ public class MinecartEntryListener implements Listener {
 		}
 	}
 
+	/**
+	 * Handles the move event of the minecart. If the minecart was registered as
+	 * a minecart to speed up (using {@link #addMinecartToSpeedUp(Minecart)
+	 * addMinecartToSpeedUp}), it will manage the velocity and maximum speed if
+	 * necessary.
+	 * 
+	 * @param event
+	 */
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onMinecartMove(VehicleMoveEvent event) {
 		Entity passenger = event.getVehicle().getPassenger();
@@ -50,7 +65,6 @@ public class MinecartEntryListener implements Listener {
 			if (passenger instanceof Player && vehicle instanceof Minecart) {
 				Minecart minecart = (Minecart) vehicle;
 				if (minecartsToSpeedUp.contains(minecart)) {
-					// Getting Data about minecart and his location
 					MaterialData minecartMaterialData = minecart.getLocation()
 							.getBlock().getState().getData();
 
@@ -64,7 +78,7 @@ public class MinecartEntryListener implements Listener {
 							prevSpeed.put(minecart, minecart.getVelocity()
 									.length());
 							hasNotPassed.add(minecart);
-							minecart.setMaxSpeed(NORMAL_MAX_SPEED);
+							minecart.setMaxSpeed(DEFAULT_MAX_SPEED);
 						}
 
 					} else if (hasNotPassed.contains(minecart)
@@ -79,7 +93,7 @@ public class MinecartEntryListener implements Listener {
 						if (!checkLocationForIncompatibleRail(minecart
 								.getLocation())
 								&& !checkTrackForIncompatibleRails(minecart)) {
-							minecart.setMaxSpeed(NEW_MAX_SPEED);
+							minecart.setMaxSpeed(pluginMaxSpeed);
 							Double previousSpeed = prevSpeed.get(minecart);
 
 							Vector newVel = null;
@@ -115,6 +129,15 @@ public class MinecartEntryListener implements Listener {
 		}
 	}
 
+	/**
+	 * Cheks the further track of the minecart for curved rails or rails on
+	 * slope. It will <b>not</b> check the current position of the minecart for
+	 * incompatible tiles!
+	 * 
+	 * @param minecart
+	 *            The minecart which track should be checked.
+	 * @return True, if there is a incompatible rail at the next few blocks
+	 */
 	private boolean checkTrackForIncompatibleRails(Minecart minecart) {
 		Vector v = minecart.getVelocity();
 		double x = v.getX();
@@ -135,11 +158,11 @@ public class MinecartEntryListener implements Listener {
 	}
 
 	/**
-	 * Checking location for curved Rails or Rails on Slope
+	 * Checking location for curved rails or rails on slope
 	 * 
 	 * @param loc
 	 *            The Location to test
-	 * @return true, if there is a incompatibleRail
+	 * @return True, if there is a incompatible rail at the given location
 	 */
 	private boolean checkLocationForIncompatibleRail(Location location) {
 		MaterialData dataToTest = location.getBlock().getState().getData();
@@ -159,23 +182,37 @@ public class MinecartEntryListener implements Listener {
 			double actualZ = actualVelocity.getZ();
 			actualX = actualX / actualVelocity.length();
 			actualZ = actualZ / actualVelocity.length();
-			minecart.setVelocity(new Vector(actualX * NORMAL_MAX_SPEED, 0,
-					actualZ * NORMAL_MAX_SPEED));
+			minecart.setVelocity(new Vector(actualX * DEFAULT_MAX_SPEED, 0,
+					actualZ * DEFAULT_MAX_SPEED));
 		}
 	}
 
+	/**
+	 * Register a minecart as a cart which should be increse his maximum speed
+	 * 
+	 * @param minecart
+	 *            The minecart to register
+	 */
 	public void addMinecartToSpeedUp(Minecart minecart) {
 		if (!minecartsToSpeedUp.contains(minecart)) {
 			if (!checkTrackForIncompatibleRails(minecart)) {
-				minecart.setMaxSpeed(NEW_MAX_SPEED);
+				minecart.setMaxSpeed(pluginMaxSpeed);
 			}
 			minecartsToSpeedUp.add(minecart);
 		}
 	}
 
+	/**
+	 * Unregister a minecart as a cart which should be increse his maximum
+	 * speed. The maximum speed of the minecart will be the default value after
+	 * unregistering
+	 * 
+	 * @param minecart
+	 *            The minecart to unregister
+	 */
 	public void removeMinecartToSpeedUp(Minecart minecart) {
 		if (minecartsToSpeedUp.contains(minecart)) {
-			minecart.setMaxSpeed(NORMAL_MAX_SPEED);
+			minecart.setMaxSpeed(DEFAULT_MAX_SPEED);
 			minecartsToSpeedUp.remove(minecart);
 		}
 	}

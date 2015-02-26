@@ -1,8 +1,8 @@
 name: FasterMinecart
-version: 1.0
+version: 2.0
 main: de.findus1994.FasterMinecart.Main
 author: Findus1994
-description: A plugin to increase the speed of a Minecart. 
+description: A plugin to increase the speed of a minecart. 
 
 commands:
     speedme:
@@ -11,3 +11,9 @@ commands:
     slowme:
         usage: /<command>
         description: Slow down a minecart
+
+permissions:
+    fasterminecart.controlespeed:
+        description:  Use the speedme or slowme command to change the maximuma speed of a minecart
+        default: op
+

@@ -40,7 +40,7 @@ public class MinecartEntryListener implements Listener {
 		Entity passenger = event.getEntered();
 		Vehicle vehicle = event.getVehicle();
 		if (passenger != null && vehicle != null) {
-			if (passenger instanceof Player && vehicle instanceof Minecart) {
+			if (passenger instanceof Player && vehicle instanceof Minecart && ((Player) passenger).hasPermission("fasterminecart.controlespeed")) {
 				((Player) passenger)
 						.sendMessage(ChatColor.GRAY
 								+ "Type \"/speedme\" or \"/slowme\" to controle minecart speed");

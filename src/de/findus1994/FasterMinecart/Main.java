@@ -35,14 +35,21 @@ public class Main extends JavaPlugin {
 		if (command.getName().equalsIgnoreCase("speedme")) {
 			if (sender instanceof Player) {
 				Player player = (Player) sender;
-				Entity vehicle = player.getVehicle();
-				if (vehicle != null && vehicle instanceof Minecart) {
-					Minecart minecart = (Minecart) vehicle;
-					minecartEntryListener.addMinecartToSpeedUp(minecart);
-					player.sendMessage(ChatColor.GRAY + "Speeding up minecart");
+				if (player.hasPermission("fasterminecart.controlespeed")) {
+					Entity vehicle = player.getVehicle();
+					if (vehicle != null && vehicle instanceof Minecart) {
+						Minecart minecart = (Minecart) vehicle;
+						minecartEntryListener.addMinecartToSpeedUp(minecart);
+						player.sendMessage(ChatColor.GRAY
+								+ "Speeding up minecart");
+
+					} else {
+						player.sendMessage(ChatColor.RED
+								+ "You can only use this command in a Minecart");
+					}
 				} else {
 					player.sendMessage(ChatColor.RED
-							+ "You can only use this command in a Minecart");
+							+ "You don't have permission to execute this command!");
 				}
 			} else
 				sender.sendMessage(ChatColor.RED
@@ -50,14 +57,20 @@ public class Main extends JavaPlugin {
 		} else if (command.getName().equalsIgnoreCase("slowme")) {
 			if (sender instanceof Player) {
 				Player player = (Player) sender;
-				Entity vehicle = player.getVehicle();
-				if (vehicle != null && vehicle instanceof Minecart) {
-					Minecart minecart = (Minecart) vehicle;
-					minecartEntryListener.removeMinecartToSpeedUp(minecart);
-					player.sendMessage(ChatColor.GRAY + "Slowing down minecart");
+				if (sender.hasPermission("fasterminecart.controlespeed")) {
+					Entity vehicle = player.getVehicle();
+					if (vehicle != null && vehicle instanceof Minecart) {
+						Minecart minecart = (Minecart) vehicle;
+						minecartEntryListener.removeMinecartToSpeedUp(minecart);
+						player.sendMessage(ChatColor.GRAY
+								+ "Slowing down minecart");
+					} else {
+						player.sendMessage(ChatColor.RED
+								+ "You can only use this command in a Minecart");
+					}
 				} else {
 					player.sendMessage(ChatColor.RED
-							+ "You can only use this command in a Minecart");
+							+ "You don't have permission to execute this command!");
 				}
 			} else
 				sender.sendMessage(ChatColor.RED

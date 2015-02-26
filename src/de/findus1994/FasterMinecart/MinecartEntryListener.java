@@ -29,21 +29,29 @@ public class MinecartEntryListener implements Listener {
 	private final HashMap<Minecart, Double> prevSpeed = new HashMap<Minecart, Double>();
 	private final ArrayList<Minecart> hasNotPassed = new ArrayList<Minecart>();
 	private final double pluginMaxSpeed;
+	private final boolean showInformationInMinecart;
 
 	public MinecartEntryListener(Main main) {
 		plugin = main;
 		pluginMaxSpeed = plugin.getConfig().getDouble("maximumSpeed");
+		showInformationInMinecart = plugin.getConfig().getBoolean(
+				"showInfoMessage");
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onMinecartEnter(VehicleEnterEvent event) {
-		Entity passenger = event.getEntered();
-		Vehicle vehicle = event.getVehicle();
-		if (passenger != null && vehicle != null) {
-			if (passenger instanceof Player && vehicle instanceof Minecart && ((Player) passenger).hasPermission("fasterminecart.controlespeed")) {
-				((Player) passenger)
-						.sendMessage(ChatColor.GRAY
-								+ "Type \"/speedme\" or \"/slowme\" to controle minecart speed");
+		if (showInformationInMinecart) {
+			Entity passenger = event.getEntered();
+			Vehicle vehicle = event.getVehicle();
+			if (passenger != null && vehicle != null) {
+				if (passenger instanceof Player
+						&& vehicle instanceof Minecart
+						&& ((Player) passenger)
+								.hasPermission(Main.PERMISSION_CONTROLSPEED)) {
+					((Player) passenger)
+							.sendMessage(ChatColor.GRAY
+									+ "Type \"/speedme\" or \"/slowme\" to control minecart speed");
+				}
 			}
 		}
 	}

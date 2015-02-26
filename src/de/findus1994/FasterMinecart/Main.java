@@ -11,6 +11,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
 
+
+	public static final String PERMISSION_CONTROLSPEED = "fasterminecart.controlspeed";
+	
+	private static final String COMMAND_SPEED_UP = "speedme";
+	private static final String COMMAND_SLOW_DOWN = "slowme";
 	private static final String LOGGINGPREFIX = "[FasterMinecart] ";
 	private MinecartEntryListener minecartEntryListener;
 
@@ -32,10 +37,10 @@ public class Main extends JavaPlugin {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
-		if (command.getName().equalsIgnoreCase("speedme")) {
+		if (command.getName().equalsIgnoreCase(COMMAND_SPEED_UP)) {
 			if (sender instanceof Player) {
 				Player player = (Player) sender;
-				if (player.hasPermission("fasterminecart.controlespeed")) {
+				if (player.hasPermission(PERMISSION_CONTROLSPEED)) {
 					Entity vehicle = player.getVehicle();
 					if (vehicle != null && vehicle instanceof Minecart) {
 						Minecart minecart = (Minecart) vehicle;
@@ -54,10 +59,10 @@ public class Main extends JavaPlugin {
 			} else
 				sender.sendMessage(ChatColor.RED
 						+ "Please Provide as a Player!");
-		} else if (command.getName().equalsIgnoreCase("slowme")) {
+		} else if (command.getName().equalsIgnoreCase(COMMAND_SLOW_DOWN)) {
 			if (sender instanceof Player) {
 				Player player = (Player) sender;
-				if (sender.hasPermission("fasterminecart.controlespeed")) {
+				if (sender.hasPermission(PERMISSION_CONTROLSPEED)) {
 					Entity vehicle = player.getVehicle();
 					if (vehicle != null && vehicle instanceof Minecart) {
 						Minecart minecart = (Minecart) vehicle;
